@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if error_message %}
+
+	<p><strong>{{ error_message }}</strong></p>
+{% endif %}
+<a class="btn btn-secondary btn-sm mb-3" href="{% url 'vote4change:index' %}">Back to Polls</a>
+<div class="card mb-4">
+	<div class="card-body">
+		<p>{{question.question_text}}</p>
+		<form action="{% url 'vote4change:vote' question.id %}" method="post">
+			{% csrf_token %}
+			{% for choice in question.choice_set.all %}
+			<input type="radio" name="choice" id="choice{{forloop.counter}}" value="{{choice.id}}">
+			<label for="choice{{forloop.counter}}">{{ choice.choice_text }}</label>
+			<br>
+			{% endfor %}
+			<input type="submit" name="" value="Vote">
+			
+		</form>
+			
+		
+	</div>
+	
+</div>
+{% endblock %}
