@@ -1,5 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
+<!-- zing chart -->
+
+<script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+<!-- Ajax -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+
 <h1 class="mb-5 text-center">
 {{question.question_text}}
 </h1>
@@ -14,7 +22,74 @@
 	</li>
 {% endfor %}
 </ul>
-<a class="btn btn-secondary mt-3" href="{% url 'vote4change:index' %}">Bacl to poll</a>
-<a class="btn btn-secondary mt-3" href="{% url 'vote4change:detail' question.id %}">Vote again?</a>
+<br>
+<div id="myChart">
+	
+</div>
+
+<div class="mb-5">
+	<a class="btn btn-secondary mt-3" href="{% url 'vote4change:index' %}">Back to Poll</a>
+	<a class="btn btn-secondary mt-3" href="{% url 'vote4change:detail' question.id %}">Vote Again?</a>
+	
+</div>
+
+<script type="text/javascript">
+
+	var state = {
+		'items':[],
+		'values':[],
+	}
+
+	var objectId = '{{question.id}}'
+	var dataURL = `/polls/${objectId}/resultsdata/`
+	$.ajax({
+		method:'GET',
+		url:dataURL,
+		success:function(response){
+			console.log('response:', response)
+			for (var i in response){
+				console.log("i:", response[i])
+				console.log("works")
+				var key = Object.keys(response[i])[0]
+				console.log("THis")
+				var value = Object.values(response[i])[0]
+				state.items.push(key)
+				state.values.push(value)
+
+			}
+			console.log("state", state)
+			builChart()
+		}
+	})
+	function builChart(){
+			var chartData = {
+			"type": "bar",
+			"title": {
+	    	"text": "View chart"
+	  		},
+			"scale-x": {
+				"values":state.items
+			},
+			"series": [
+				{
+					"values":state.values
+				}
+			]
+
+
+		}
+		zingchart.render({
+		id: "myChart",
+		data: chartData,
+		});
+
+	}
+
+
+
+
+	
+</script>
+
 
 {% endblock %}

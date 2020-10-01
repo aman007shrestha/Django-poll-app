@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from .models import Question, Choice
+
+from django.http import JsonResponse
 # Create your views here.
 
 
@@ -38,3 +40,16 @@ def vote(request, pk):
 		selected_choice.votes += 1
 		selected_choice.save()
 		return redirect(reverse('vote4change:result', args=(question.id,)))
+
+
+#  for chart
+def result_data(request, object_id):
+	votedata = []
+
+	question = Question.objects.get(id=object_id)
+	votes = question.choice_set.all()
+	for i in votes:
+		votedata.append({i.choice_text: i.votes})
+	print(votedata)
+	return JsonResponse(votedata, safe=False)
+
